@@ -4,12 +4,22 @@ require_once('vendor/autoload.php');
 $loop = React\EventLoop\Factory::create();
 
 $client = new Slack\RealTimeClient($loop);
-$client->setToken('xoxb-232227407542-jv53We0F81DLdDqtlMjW61H8');
+$client->setToken('xoxb-232227407542-uswTfAkLZSjPbOp7aGROrdbB');
 
 $client->on('message', function ($data) use ($client) {
 	$currentMessage = $data['text'];
     echo "Someone typed a message: ".$currentMessage."\n";
-    if(strpos(strtolower($currentMessage), "pau") !== false) {
+    if ($currentMessage == "andate pau") {
+    	$client->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($client, $data) {
+        	$message = $client->getMessageBuilder()
+                    ->setText("auchi")
+                    ->setChannel($channel)
+                    ->create();
+        	$client->postMessage($message);
+    	});
+    	$client->disconnect();
+    }
+    elseif(strpos(strtolower($currentMessage), "pau") !== false) {
     	$client->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($client, $data) {
         	$message = $client->getMessageBuilder()
                     ->setText("tratame bieeeeeeeen!")
@@ -27,17 +37,6 @@ $client->on('message', function ($data) use ($client) {
         	$client->postMessage($message);
     	});
     }
-    elseif ($currentMessage == "andate pau") {
-    	$client->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($client, $data) {
-        	$message = $client->getMessageBuilder()
-                    ->setText("auchi")
-                    ->setChannel($channel)
-                    ->create();
-        	$client->postMessage($message);
-    	});
-    	$client->disconnect();
-    }
-    
 });
 
 $client->connect()->then(function () {
